@@ -1,35 +1,17 @@
 var express = require('express');
 var stylus = require('stylus');
-var bodyParser = require('body-parser');
-var logger = require('morgan');
 
-var env = process.env.NODE_ENV = process.env.NODE_ENV || "development";
+var env = process.env.NODE_ENV = process.env.NODE_ENV || "dev";
 
 var app = express();
 
-function compile(str, path){
-    return stylus(str).set("filename", path);
-}
+var config = require('./server/config/config')[env];
+require('./server/config/express')(app,config);
+require('./server/config/routes')(app);
 
-app.set('views', __dirname + "/server/views" );
-app.set('view engine', 'jade');
-app.use(logger('dev'));
-app.use(bodyParser());
-app.use(stylus.middleware({
-    src:__dirname + '/public',
-    compile: compile
-}));
-app.use(express.static(__dirname + "/public"));
+app.listen(config.port);
 
-
-app.get('*', function(req, res){
-    res.render('index');
-});
-
-
-
-
-var port = 3031
-app.listen(port);
-
-console.log("We are running on " + port);
+console.log('Environment Mode   : ' + env);
+console.log('Root               : ' + config.rootPath);
+console.log('Views              : ' + config.viewPath);
+console.log('Listening on port  : ' + config.port);
