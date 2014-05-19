@@ -17,3 +17,26 @@ angular.module('app')
             'self', 'https://*.youtube.com/**', 'http://*.youtube.com/**'
         ]);
     }]);
+
+angular.module('app').run(['$window', '$log', function($window, $log){
+    $window.loadYoutubeScriptIfRequired = function(){
+        $log.info('loading Youtube Script....');
+        var tag = document.createElement('script');
+        tag.src = "https://www.youtube.com/iframe_api";
+        var alreadyLoaded = false;
+        $("script").each(function() {
+            if( this.src == tag.src ) {
+                alreadyLoaded = true;
+            }
+        });
+
+        if ( alreadyLoaded === false) {
+            var firstTagScript = document.getElementsByTagName('script')[0];
+            firstTagScript.parentNode.insertBefore(tag, firstTagScript);
+        }
+        return alreadyLoaded;
+    };
+    $window.loadYoutubeScriptIfRequired();
+}]);
+
+
